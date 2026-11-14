@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Formularz</title>
+    <style>
+        body, .buttons {
+            text-align: center;
+        }
+
+        form {
+            display: inline-block;
+            width: 320px;
+            padding: 20px;
+            border: 2px solid black;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        input:not([type="radio"]), .options {
+            float: right;
+        }
+
+        small {
+            display: block;
+            clear: both;
+        }
+
+        .error {
+            color: #b00020;
+        }
+
+        button {
+            color: white;
+            padding: 6px 14px;
+            border-radius: 5px;
+            background: #4caf50;
+        }
+
+        button[type="reset"] {
+            background: #af4c4c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formularz</h1>
+
+    <form id="formularz" novalidate>
+        <p><label>Imię: <input type="text" required pattern="[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]+" data-blad="Podaj imię, używając tylko liter."></label><small class="error"></small></p>
+        <p><label>Nazwisko: <input type="text" required pattern="[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]+" data-blad="Podaj nazwisko, używając tylko liter."></label><small class="error"></small></p>
+        <p><label>Ulica: <input type="text" required maxlength="50" data-blad="Podaj ulicę."></label><small class="error"></small></p>
+        <p><label>Miasto: <input type="text" required maxlength="50" pattern="[A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]+([ \-][A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]+)*" data-blad="Podaj miasto. Użyj liter, spacji lub łącznika."></label><small class="error"></small></p>
+        <p><label>Hasło: <input type="password" required data-blad="Podaj hasło."></label><small class="error"></small></p>
+        <p><label>Data urodzenia: <input type="date" required data-blad="Podaj datę."></label><small class="error"></small></p>
+
+        <p>
+            <label>
+                Telefon:
+                <input type="tel" required pattern="[+]48[0-9]{9}"
+                       data-blad="Wpisz np. +48123456789." placeholder="+48123456789" aria-describedby="format-telefonu">
+            </label>
+            <small id="format-telefonu">+48 i 9 cyfr bez spacji.</small>
+            <small class="error"></small>
+        </p>
+
+        <p><label>E-mail: <input type="email" required data-blad="Podaj poprawny e-mail."></label><small class="error"></small></p>
+        <p><label>Uwagi (opcjonalnie): <input type="text"></label></p>
+
+        <p>
+            Prawo jazdy:
+            <span class="options">
+                <label><input type="radio" name="prawo_jazdy" value="tak" required data-blad="Wybierz Tak lub Nie."> Tak</label>
+                <label><input type="radio" name="prawo_jazdy" value="nie"> Nie</label>
+            </span>
+            <small class="error"></small>
+        </p>
+
+        <div class="buttons">
+            <button type="reset">Wyczyść</button>
+            <button type="submit">Wyślij</button>
+        </div>
+        <p id="wynik" role="status"></p>
+    </form>
+
+    <script>
+        const formularz = document.getElementById("formularz");
+        const pola = formularz.querySelectorAll("[data-blad]");
+        const wynik = document.getElementById("wynik");
+
+        formularz.addEventListener("submit", function (event) {
+            event.preventDefault();
+            wynik.textContent = "";
+            let saBledy = false;
+
+            for (const pole of pola) {
+                const wiersz = pole.closest("p");
+                const komunikat = wiersz.querySelector(".error");
+                let poprawne = pole.checkValidity();
+
+                if (pole.type !== "radio" && pole.value.trim() === "") {
+                    poprawne = false;
+                }
+
+                if (poprawne) {
+                    komunikat.textContent = "";
+                } else {
+                    komunikat.textContent = pole.dataset.blad;
+
+                    saBledy = true;
+                }
+            }
+
+            if (!saBledy) {
+                wynik.textContent = "Formularz jest poprawny.";
+            }
+        });
+
+        formularz.addEventListener("reset", function () {
+            wynik.textContent = "";
+            for (const blad of formularz.querySelectorAll(".error")) {
+                blad.textContent = "";
+            }
+        });
+    </script>
+</body>
+</html>
